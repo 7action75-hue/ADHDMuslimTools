@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0A1312">
+<title>FocusBridge 🌿</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='28' font-size='28'>🌿</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B1413;--s1:#101D1B;--s2:#152523;--g:rgba(255,255,255,.03);
+--b:rgba(255,255,255,.06);--m:#4ADE80;--go:#F5C842;--t:#2DD4BF;--p:#A78BFA;
+--r:#FB7185;--o:#FB923C;--sk:#7DD3FC;--tx:#EDE8DF;--md:#8A9490;--dm:#4A5553;
+--spr:cubic-bezier(.34,1.56,.64,1);--ez:cubic-bezier(.4,0,.2,1)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'Nunito',system-ui,sans-serif;
+display:flex;justify-content:center}
+#app{width:100%;max-width:430px;height:100%;display:flex;flex-direction:column;position:relative}
+.sc{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.sc::-webkit-scrollbar{display:none}
+.ar{font-family:'Amiri',serif;direction:rtl;text-align:right}
+.pg{padding:0 20px 100px}
+
+/* Cards */
+.c{background:var(--s1);border-radius:22px;padding:16px;border:1px solid var(--b);
+position:relative;overflow:hidden;transition:transform .15s var(--ez)}
+.c:active{transform:scale(.985)}
+.c2{background:var(--s2)}
+
+/* Nav */
+.nv{position:absolute;bottom:0;left:0;right:0;height:68px;display:flex;
+background:rgba(11,20,19,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+border-top:1px solid var(--b);padding:0 8px;z-index:100}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:2px;background:none;border:none;cursor:pointer;color:var(--dm);font-family:inherit;
+transition:all .2s var(--spr);position:relative}
+.nb.a{color:var(--m)}
+.nb.a::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;
+background:var(--m);border-radius:0 0 2px 2px}
+.ni{font-size:20px;height:28px;display:flex;align-items:center;justify-content:center}
+.nl{font-size:9px;font-weight:700;letter-spacing:.3px}
+
+/* Typography */
+h1{font-size:26px;font-weight:900;line-height:1.2}
+h2{font-size:22px;font-weight:900;line-height:1.2;padding:16px 0 10px}
+h3{font-size:15px;font-weight:800}
+.sub{font-size:11px;color:var(--md);margin-top:2px}
+.cap{font-size:9px;font-weight:800;color:var(--dm);letter-spacing:1.2px;text-transform:uppercase}
+.tg{display:inline-flex;padding:4px 10px;border-radius:10px;font-size:9px;font-weight:800}
+
+/* Animations */
+@keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pi{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes cf{0%{transform:translateY(0)rotate(0);opacity:1}100%{transform:translateY(-140px)rotate(720deg)scale(0);opacity:0}}
+@keyframes sw{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes gl{0%,100%{box-shadow:0 0 12px rgba(245,200,66,.1)}50%{box-shadow:0 0 24px rgba(245,200,66,.2)}}
+@keyframes cp{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.afi{animation:fi .4s var(--ez) both}
+
+/* Buttons */
+.btn{padding:14px 24px;border-radius:16px;border:none;font-size:15px;font-weight:800;
+font-family:inherit;cursor:pointer;transition:all .15s var(--ez);width:100%}
+.btn:active{transform:scale(.97)}
+.btn1{background:var(--m);color:#0A1312}
+.btn2{background:linear-gradient(135deg,var(--m),var(--t));color:#0A1312}
+.btn3{background:var(--s2);color:var(--tx);border:1px solid var(--b)}
+
+/* Search */
+.srch{width:100%;padding:12px 16px 12px 40px;border-radius:16px;background:var(--s1);
+border:1px solid var(--b);color:var(--tx);font-size:14px;font-weight:600;
+font-family:inherit;outline:none}
+.srch:focus{border-color:rgba(74,222,128,.2)}
+.srch::placeholder{color:var(--dm)}
+
+/* Loot */
+.lo{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+background:rgba(0,0,0,.93);backdrop-filter:blur(24px);animation:fi .3s;cursor:pointer}
+.lp{position:absolute;border-radius:50%;animation:cf 1.5s var(--spr) forwards;opacity:0}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 16px;border-radius:14px;background:var(--s1);border:1.5px solid var(--b);
+color:var(--dm);font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;
+font-family:inherit;transition:all .2s var(--ez);flex-shrink:0}
+.tab.a{background:rgba(74,222,128,.1);border-color:var(--m);color:var(--m)}
+
+/* Responsive */
+@media(min-width:431px){body{background:#060A09}#app{border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04)}}
+@media(max-width:370px){h1{font-size:22px}h2{font-size:19px}.pg{padding:0 16px 100px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ═══════════════════════════════════════════
+// FocusBridge v8 — ADHD-Friendly Redesign
+// Full Quran Library + Prophetic Medicine
+// ═══════════════════════════════════════════
+const C={m:'#4ADE80',go:'#F5C842',t:'#2DD4BF',p:'#A78BFA',r:'#FB7185',o:'#FB923C',md:'#8A9490',dm:'#4A5553',tx:'#EDE8DF'};
+
+// ════ FULL QURAN LIBRARY (50 key ayahs, categorized) ════
+const AYAHS=[
+// PATIENCE & HARDSHIP
+{id:1,s:"Al-Baqarah",v:"2:153",ar:"يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ",en:"O believers, seek help through patience and prayer",cat:"patience",r:"common"},
+{id:2,s:"Al-Baqarah",v:"2:286",ar:"لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا",en:"Allah does not burden a soul beyond its capacity",cat:"patience",r:"common"},
+{id:3,s:"Ash-Sharh",v:"94:5-6",ar:"فَإِنَّ مَعَ الْعُسْرِ يُسْرًا · إِنَّ مَعَ الْعُسْرِ يُسْرًا",en:"With hardship comes ease — indeed, with hardship comes ease",cat:"patience",r:"epic"},
+{id:4,s:"Al-Baqarah",v:"2:216",ar:"وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ",en:"Perhaps you dislike something that is good for you",cat:"patience",r:"rare"},
+{id:5,s:"Az-Zumar",v:"39:10",ar:"إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ",en:"The patient will be given reward without limit",cat:"patience",r:"epic"},
+// TRUST IN ALLAH
+{id:6,s:"Al-Baqarah",v:"2:186",ar:"وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ",en:"When My servants ask about Me — I am near",cat:"tawakkul",r:"rare"},
+{id:7,s:"At-Talaq",v:"65:3",ar:"وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",en:"Whoever puts trust in Allah, He is enough for them",cat:"tawakkul",r:"rare"},
+{id:8,s:"Al-Imran",v:"3:173",ar:"حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",en:"Sufficient for us is Allah, the best Disposer of affairs",cat:"tawakkul",r:"epic"},
+{id:9,s:"Al-Anfal",v:"8:2",ar:"وَعَلَىٰ رَبِّهِمْ يَتَوَكَّلُونَ",en:"And upon their Lord they rely",cat:"tawakkul",r:"common"},
+{id:10,s:"Ibrahim",v:"14:12",ar:"وَعَلَى اللَّهِ فَلْيَتَوَكَّلِ الْمُتَوَكِّلُونَ",en:"And upon Allah let the believers rely",cat:"tawakkul",r:"common"},
+// MERCY & FORGIVENESS
+{id:11,s:"Az-Zumar",v:"39:53",ar:"لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا",en:"Do not despair of Allah's mercy — He forgives all sins",cat:"mercy",r:"epic"},
+{id:12,s:"Al-Araf",v:"7:156",ar:"وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ",en:"My mercy encompasses all things",cat:"mercy",r:"legendary"},
+{id:13,s:"An-Nisa",v:"4:110",ar:"وَمَن يَعْمَلْ سُوءًا أَوْ يَظْلِمْ نَفْسَهُ ثُمَّ يَسْتَغْفِرِ اللَّهَ يَجِدِ اللَّهَ غَفُورًا رَّحِيمًا",en:"Whoever does wrong then seeks forgiveness will find Allah Forgiving, Merciful",cat:"mercy",r:"rare"},
+{id:14,s:"Al-Hijr",v:"15:49",ar:"نَبِّئْ عِبَادِي أَنِّي أَنَا الْغَفُورُ الرَّحِيمُ",en:"Inform My servants that I am the Forgiving, the Merciful",cat:"mercy",r:"common"},
+// GRATITUDE
+{id:15,s:"Ibrahim",v:"14:7",ar:"لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ",en:"If you are grateful, I will surely increase you",cat:"gratitude",r:"rare"},
+{id:16,s:"Ar-Rahman",v:"55:13",ar:"فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ",en:"So which of the favors of your Lord would you deny?",cat:"gratitude",r:"rare"},
+{id:17,s:"An-Nahl",v:"16:18",ar:"وَإِن تَعُدُّوا نِعْمَةَ اللَّهِ لَا تُحْصُوهَا",en:"If you tried to count Allah's blessings, you could not",cat:"gratitude",r:"common"},
+{id:18,s:"Luqman",v:"31:12",ar:"وَمَن يَشْكُرْ فَإِنَّمَا يَشْكُرُ لِنَفْسِهِ",en:"Whoever is grateful — it is for their own good",cat:"gratitude",r:"common"},
+// PEACE & DHIKR
+{id:19,s:"Ar-Ra'd",v:"13:28",ar:"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",en:"Truly, in the remembrance of Allah do hearts find rest",cat:"dhikr",r:"rare"},
+{id:20,s:"Al-Baqarah",v:"2:152",ar:"فَاذْكُرُونِي أَذْكُرْكُمْ",en:"Remember Me, and I will remember you",cat:"dhikr",r:"epic"},
+{id:21,s:"Al-Ahzab",v:"33:41",ar:"يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا اللَّهَ ذِكْرًا كَثِيرًا",en:"O believers, remember Allah with much remembrance",cat:"dhikr",r:"common"},
+{id:22,s:"Taha",v:"20:14",ar:"وَأَقِمِ الصَّلَاةَ لِذِكْرِي",en:"Establish prayer for My remembrance",cat:"dhikr",r:"common"},
+// HEALING
+{id:23,s:"Al-Isra",v:"17:82",ar:"وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ",en:"We send down from the Quran that which is healing and mercy",cat:"healing",r:"legendary"},
+{id:24,s:"An-Nahl",v:"16:69",ar:"يَخْرُجُ مِن بُطُونِهَا شَرَابٌ فِيهِ شِفَاءٌ لِّلنَّاسِ",en:"From their bellies comes a drink in which is healing for people",cat:"healing",r:"legendary"},
+{id:25,s:"Ash-Shuara",v:"26:80",ar:"وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ",en:"And when I am ill, it is He who cures me",cat:"healing",r:"rare"},
+{id:26,s:"Fussilat",v:"41:44",ar:"قُلْ هُوَ لِلَّذِينَ آمَنُوا هُدًى وَشِفَاءٌ",en:"Say: It is for those who believe, a guidance and a cure",cat:"healing",r:"epic"},
+// STRENGTH & EFFORT
+{id:27,s:"Al-Ankabut",v:"29:69",ar:"وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا",en:"Those who strive for Us — We will guide them to Our ways",cat:"effort",r:"common"},
+{id:28,s:"Al-Inshirah",v:"94:7-8",ar:"فَإِذَا فَرَغْتَ فَانصَبْ · وَإِلَىٰ رَبِّكَ فَارْغَب",en:"When you finish a task, stand for another — and turn to your Lord",cat:"effort",r:"common"},
+{id:29,s:"Al-Baqarah",v:"2:45",ar:"وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى الْخَاشِعِينَ",en:"It is difficult indeed, except for the humbly devoted",cat:"effort",r:"rare"},
+{id:30,s:"Muhammad",v:"47:7",ar:"إِن تَنصُرُوا اللَّهَ يَنصُرْكُمْ",en:"If you support Allah, He will support you",cat:"effort",r:"common"},
+// DUA
+{id:31,s:"Ghafir",v:"40:60",ar:"ادْعُونِي أَسْتَجِبْ لَكُمْ",en:"Call upon Me; I will respond to you",cat:"dua",r:"epic"},
+{id:32,s:"Al-Baqarah",v:"2:186",ar:"أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ",en:"I respond to the call of the caller when they call",cat:"dua",r:"rare"},
+{id:33,s:"Al-Araf",v:"7:55",ar:"ادْعُوا رَبَّكُمْ تَضَرُّعًا وَخُفْيَةً",en:"Call upon your Lord humbly and privately",cat:"dua",r:"common"},
+// TIME & LIFE
+{id:34,s:"Al-Asr",v:"103:1-3",ar:"وَالْعَصْرِ · إِنَّ الْإِنسَانَ لَفِي خُسْرٍ · إِلَّا الَّذِينَ آمَنُوا",en:"By time — mankind is in loss — except those who believe and do good",cat:"time",r:"common"},
+{id:35,s:"Al-Hashr",v:"59:18",ar:"يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ",en:"O believers, be mindful of Allah and see what you have sent ahead for tomorrow",cat:"time",r:"rare"},
+// BEGINNING & BASMALA
+{id:36,s:"Al-Fatiha",v:"1:1",ar:"بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",en:"In the name of Allah, the Most Gracious, the Most Merciful",cat:"begin",r:"common"},
+{id:37,s:"Al-Fatiha",v:"1:5",ar:"إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",en:"You alone we worship, and You alone we ask for help",cat:"begin",r:"common"},
+{id:38,s:"Al-Fatiha",v:"1:6",ar:"اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",en:"Guide us to the straight path",cat:"begin",r:"common"},
+// NATURE & CREATION
+{id:39,s:"Al-Baqarah",v:"2:164",ar:"إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ",en:"In the creation of heavens and earth and the alternation of night and day are signs",cat:"nature",r:"common"},
+{id:40,s:"Ar-Rahman",v:"55:1-4",ar:"الرَّحْمَـٰنُ · عَلَّمَ الْقُرْآنَ · خَلَقَ الْإِنسَانَ · عَلَّمَهُ الْبَيَانَ",en:"The Most Merciful — taught the Quran — created mankind — taught them speech",cat:"nature",r:"epic"},
+// FOOD IN QURAN
+{id:41,s:"Al-Baqarah",v:"2:168",ar:"يَا أَيُّهَا النَّاسُ كُلُوا مِمَّا فِي الْأَرْضِ حَلَالًا طَيِّبًا",en:"O mankind, eat from the earth what is lawful and good",cat:"food",r:"common"},
+{id:42,s:"Al-Muminun",v:"23:51",ar:"يَا أَيُّهَا الرُّسُلُ كُلُوا مِنَ الطَّيِّبَاتِ وَاعْمَلُوا صَالِحًا",en:"O messengers, eat from the good foods and do righteousness",cat:"food",r:"rare"},
+{id:43,s:"Abasa",v:"80:24-32",ar:"فَلْيَنظُرِ الْإِنسَانُ إِلَىٰ طَعَامِهِ ... فَاكِهَةً وَأَبًّا",en:"Let mankind look at their food... fruits and pastures",cat:"food",r:"common"},
+{id:44,s:"An-Nahl",v:"16:11",ar:"يُنبِتُ لَكُم بِهِ الزَّرْعَ وَالزَّيْتُونَ وَالنَّخِيلَ وَالْأَعْنَابَ",en:"He grows for you crops, olives, date palms, and grapes",cat:"food",r:"rare"},
+{id:45,s:"Al-Anam",v:"6:141",ar:"كُلُوا مِن ثَمَرِهِ إِذَا أَثْمَرَ وَآتُوا حَقَّهُ يَوْمَ حَصَادِهِ وَلَا تُسْرِفُوا",en:"Eat of its fruit when it ripens and give its due on harvest — do not waste",cat:"food",r:"common"},
+// KNOWLEDGE
+{id:46,s:"Taha",v:"20:114",ar:"وَقُل رَّبِّ زِدْنِي عِلْمًا",en:"And say: My Lord, increase me in knowledge",cat:"knowledge",r:"rare"},
+{id:47,s:"Az-Zumar",v:"39:9",ar:"هَلْ يَسْتَوِي الَّذِينَ يَعْلَمُونَ وَالَّذِينَ لَا يَعْلَمُونَ",en:"Are those who know equal to those who do not?",cat:"knowledge",r:"common"},
+{id:48,s:"Al-Alaq",v:"96:1-5",ar:"اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ",en:"Read in the name of your Lord who created",cat:"knowledge",r:"epic"},
+{id:49,s:"Al-Mujadila",v:"58:11",ar:"يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ",en:"Allah raises those who believe and those given knowledge by degrees",cat:"knowledge",r:"rare"},
+{id:50,s:"Al-Baqarah",v:"2:269",ar:"وَمَن يُؤْتَ الْحِكْمَةَ فَقَدْ أُوتِيَ خَيْرًا كَثِيرًا",en:"Whoever is given wisdom has been given much good",cat:"knowledge",r:"common"},
+];
+
+const AY_CATS=[
+  {id:"all",l:"All",i:"📖",co:C.tx},{id:"patience",l:"Patience",i:"⏳",co:C.t},{id:"tawakkul",l:"Trust",i:"🤲",co:C.p},
+  {id:"mercy",l:"Mercy",i:"💚",co:C.m},{id:"gratitude",l:"Gratitude",i:"✨",co:C.go},{id:"dhikr",l:"Dhikr",i:"📿",co:C.t},
+  {id:"healing",l:"Healing",i:"🩺",co:C.m},{id:"effort",l:"Effort",i:"💪",co:C.o},{id:"dua",l:"Dua",i:"🤲",co:C.p},
+  {id:"food",l:"Food",i:"🍇",co:C.m},{id:"knowledge",l:"Knowledge",i:"📚",co:C.go},{id:"time",l:"Time",i:"⏰",co:C.r},
+  {id:"begin",l:"Opening",i:"🌅",co:C.go},{id:"nature",l:"Creation",i:"🌍",co:C.t}
+];
+const RC={common:C.md,rare:C.t,epic:C.p,legendary:C.go};
+
+// ════ PROPHETIC MEDICINE & NUTRITION (25 entries) ════
+const MED=[
+// SUNNAH SUPERFOODS
+{id:"dates",n:"Dates (Tamr)",i:"🫒",cat:"sunnah",h:1,
+ hadith:"The Prophet ﷺ said: 'Whoever eats seven dates in the morning will not be harmed by poison or magic that day.' — Bukhari 5445",
+ quran:"And shake toward you the trunk of the palm tree; it will drop upon you ripe, fresh dates. — Maryam 19:25",
+ sci:"Rich in iron (0.9mg/100g), potassium (696mg), magnesium (54mg), and fiber. Natural sugars (glucose, fructose) provide sustained energy without insulin spike. Contains tryptophan → serotonin → melatonin pathway support.",
+ adhd:"Stable blood sugar = stable focus. Replaces refined sugar cravings without the crash. Magnesium supports dopamine receptor function.",
+ dose:"3-7 dates each morning, ideally Ajwa variety. With water on empty stomach.",
+ nutrients:["Iron","Potassium","Magnesium","Fiber","B6","Tryptophan"]},
+{id:"honey",n:"Raw Honey (Asal)",i:"🍯",cat:"sunnah",h:1,
+ hadith:"The Prophet ﷺ said: 'Make use of the two cures: honey and the Quran.' — Ibn Majah 3452",
+ quran:"There comes from their bellies a drink of varying colors in which is healing for people. — An-Nahl 16:69",
+ sci:"Contains 200+ bioactive compounds. Prebiotic oligosaccharides feed beneficial gut bacteria (Lactobacillus, Bifidobacterium) which produce ~90% of the body's serotonin. Anti-inflammatory, antimicrobial, antioxidant.",
+ adhd:"Gut-brain axis is critical for ADHD. Healthy gut bacteria = better serotonin production = improved mood regulation and impulse control.",
+ dose:"1-2 tablespoons daily. Replace all refined sugar. Add to warm (not boiling) water, tea, or talbinah.",
+ nutrients:["Enzymes","Prebiotics","Flavonoids","Hydrogen Peroxide","Amino Acids"]},
+{id:"blackseed",n:"Black Seed (Habbatus Sauda)",i:"⚫",cat:"sunnah",h:1,
+ hadith:"The Prophet ﷺ said: 'In the black seed is a cure for every disease except death.' — Bukhari 5688",
+ quran:"",
+ sci:"Active compound thymoquinone (TQ) increases BDNF (brain-derived neurotrophic factor) — literally grows new brain cells. Anti-inflammatory, neuroprotective. Studies show improved memory and cognitive function.",
+ adhd:"BDNF is often low in ADHD brains. TQ also modulates dopamine and serotonin pathways. Reduces neuroinflammation linked to attention deficits.",
+ dose:"1 teaspoon of oil or crushed seeds daily, mixed with honey. Best on empty stomach.",
+ nutrients:["Thymoquinone","Thymohydroquinone","Thymol","Omega-6","Omega-9"]},
+{id:"olive",n:"Olive Oil (Zayt)",i:"🫒",cat:"sunnah",h:1,
+ hadith:"The Prophet ﷺ said: 'Eat olive oil and anoint yourselves with it, for it comes from a blessed tree.' — Tirmidhi 1851",
+ quran:"Allah is the Light of the heavens and earth... lit from a blessed olive tree. — An-Nur 24:35",
+ sci:"Extra virgin: 73% oleic acid crosses blood-brain barrier. Polyphenols (oleocanthal) reduce neuroinflammation equivalent to ibuprofen. Improves cerebrovascular function.",
+ adhd:"Brain is 60% fat — needs healthy fats to build and repair neurons. Oleic acid improves myelin sheath integrity = faster neural signaling = better executive function.",
+ dose:"2-4 tablespoons daily. Cook with it, drizzle on food. Extra virgin cold-pressed only.",
+ nutrients:["Oleic Acid","Polyphenols","Vitamin E","Vitamin K","Squalene"]},
+{id:"zamzam",n:"Zamzam Water",i:"💧",cat:"sunnah",h:1,
+ hadith:"The Prophet ﷺ said: 'The water of Zamzam is for whatever purpose it is drunk for.' — Ibn Majah 3062",
+ quran:"",
+ sci:"Higher mineral content than regular water: calcium (96mg/L), magnesium (38mg/L), fluoride. Alkaline pH (7.9-8.0). Research shows unique mineral profile.",
+ adhd:"ADHD brains are often chronically dehydrated. Mineral-rich water supports neurotransmitter function. The intentional act of drinking with dua creates mindfulness practice.",
+ dose:"Drink with intention and dua. Available from Hajj/Umrah or trusted suppliers.",
+ nutrients:["Calcium","Magnesium","Fluoride","Sodium","Bicarbonates"]},
+// BRAIN FOODS
+{id:"salmon",n:"Fatty Fish (Salmon, Sardines)",i:"🐟",cat:"brain",h:1,
+ hadith:"The Prophet ﷺ ate fish. — Various narrations",
+ quran:"And He subjected the sea for you to eat from it tender meat. — An-Nahl 16:14",
+ sci:"Richest source of DHA (docosahexaenoic acid) and EPA (eicosapentaenoic acid). DHA makes up 40% of brain cell membrane fatty acids. Multiple RCTs show omega-3 reduces ADHD symptoms 25-40%.",
+ adhd:"DHA deficiency is one of the most consistent biomarkers in ADHD. Supplementation improves attention, reduces hyperactivity, and enhances working memory in 8-12 weeks.",
+ dose:"2-3 servings per week of wild-caught salmon, sardines, or mackerel. Or supplement 1000-2000mg EPA+DHA daily.",
+ nutrients:["DHA","EPA","Vitamin D","Selenium","B12","Astaxanthin"]},
+{id:"eggs",n:"Eggs (Bayd)",i:"🥚",cat:"brain",h:1,
+ hadith:"",
+ quran:"",
+ sci:"One of the richest dietary sources of choline (147mg per egg). Choline → acetylcholine, the primary neurotransmitter for attention, learning, and memory. Also contains all 9 essential amino acids.",
+ adhd:"Acetylcholine is THE focus neurotransmitter. ADHD medications (like atomoxetine) work partly through cholinergic pathways. Eggs are a natural, food-based way to support this system.",
+ dose:"2-3 eggs before noon. Soft-boiled or poached preserves most nutrients. The yolk contains the choline — eat the whole egg.",
+ nutrients:["Choline","Complete Protein","Vitamin D","B12","Lutein","Selenium"]},
+{id:"walnuts",n:"Walnuts (Jawz)",i:"🥜",cat:"brain",h:1,
+ hadith:"",
+ quran:"",
+ sci:"Highest plant-based omega-3 content (ALA: 2.5g per 28g serving). Rich in polyphenols that reduce brain oxidative stress. UCLA study: walnut consumption linked to better cognitive function across all ages.",
+ adhd:"Plant-based omega-3 alternative for those who don't eat fish. The physical act of cracking/eating nuts is also a sensory-motor activity that can help ADHD regulation.",
+ dose:"A handful (28g / ~14 halves) daily. Raw or lightly toasted. Add to oatmeal or snack.",
+ nutrients:["ALA Omega-3","Polyphenols","Vitamin E","Copper","Manganese"]},
+{id:"pomegranate",n:"Pomegranate (Rumman)",i:"🍎",cat:"quran_fruit",h:1,
+ hadith:"The Prophet ﷺ said: 'There is no pomegranate that does not have a pip from the pomegranates of Jannah.' — Ahmad",
+ quran:"In both [gardens] are fruit and palm trees and pomegranates. — Ar-Rahman 55:68",
+ sci:"Punicalagins improve cerebral blood flow by up to 30% (Bookheimer et al., 2013). Ellagic acid is neuroprotective. One of the highest antioxidant fruits measured (ORAC score).",
+ adhd:"ADHD brains often have reduced blood flow to the prefrontal cortex. Pomegranate directly addresses this. More blood flow = better executive function.",
+ dose:"½ cup seeds daily as snack, or 240ml pure juice (no added sugar).",
+ nutrients:["Punicalagins","Ellagic Acid","Vitamin C","Vitamin K","Potassium","Folate"]},
+{id:"figs",n:"Figs (Tin)",i:"🫐",cat:"quran_fruit",h:1,
+ hadith:"The Prophet ﷺ said: 'If I were to say that a fruit descended from paradise, I would say this is it.' — Regarding figs",
+ quran:"By the fig and the olive. — At-Tin 95:1",
+ sci:"Exceptionally high in fiber (3g per fig), potassium, calcium, and prebiotics. Support digestive health and gut microbiome diversity.",
+ adhd:"Gut microbiome diversity directly correlates with mental health. Figs feed beneficial bacteria that produce neurotransmitters. Fiber also stabilizes blood sugar = stable focus.",
+ dose:"2-3 fresh or dried figs daily. Excellent with yogurt and honey.",
+ nutrients:["Fiber","Potassium","Calcium","Manganese","Prebiotics","Vitamin B6"]},
+{id:"grapes",n:"Grapes (Inab)",i:"🍇",cat:"quran_fruit",h:1,
+ hadith:"",
+ quran:"And from the fruits of the date palms and grapes you derive intoxicants and good provision. — An-Nahl 16:67",
+ sci:"Resveratrol improves brain blood flow and has neuroprotective effects. Polyphenols reduce oxidative stress. Natural sugars with low glycemic impact when eaten whole.",
+ adhd:"Resveratrol may improve working memory and mood. A brain-healthy snack that satisfies sweet cravings without refined sugar crash.",
+ dose:"1 cup daily. Fresh preferred. Red/purple grapes have more resveratrol than green.",
+ nutrients:["Resveratrol","Quercetin","Vitamin C","Vitamin K","Potassium"]},
+{id:"talbinah",n:"Talbinah (Barley Porridge)",i:"🌾",cat:"sunnah",h:1,
+ hadith:"Aisha (RA) said the Prophet ﷺ used to order talbinah for the sick and said: 'It soothes the heart of the grieving and relieves some sadness.' — Bukhari 5689",
+ quran:"",
+ sci:"Complex carbohydrates provide steady glucose for 3-4 hours. Rich in B-vitamins (especially B6 needed for serotonin synthesis). Beta-glucan fiber reduces cholesterol and feeds gut bacteria.",
+ adhd:"Sustained energy without crash = sustained attention. The calming effect described in hadith aligns with modern research on complex carbs and serotonin production.",
+ dose:"Cook barley flour with milk and honey. Eat warm. Excellent for breakfast or before bed.",
+ nutrients:["B-Vitamins","Beta-Glucan","Fiber","Tryptophan","Magnesium","Iron"]},
+{id:"turmeric",n:"Turmeric (Kurkum)",i:"🟡",cat:"brain",h:1,
+ hadith:"",quran:"",
+ sci:"Curcumin crosses blood-brain barrier. Increases BDNF, boosts serotonin and dopamine. UCLA study: 28% memory improvement in 18 months. Anti-inflammatory (TNF-α, IL-6 reduction).",
+ adhd:"Neuroinflammation is increasingly linked to ADHD. Curcumin reduces it while boosting the exact neurotransmitters ADHD brains are low on. Add black pepper for 2000% better absorption.",
+ dose:"½ tsp daily with black pepper and fat (olive oil or milk). Golden milk: turmeric + warm milk + honey + pepper.",
+ nutrients:["Curcumin","Iron","Manganese","Vitamin B6","Potassium"]},
+// VILLAINS
+{id:"energy",n:"Energy Drinks",i:"⚡",cat:"avoid",h:0,
+ hadith:"The Prophet ﷺ said: 'There should be neither harm nor reciprocal harm.' — Ibn Majah (La darar wa la dirar)",
+ quran:"And do not throw yourselves into destruction. — Al-Baqarah 2:195",
+ sci:"300-500mg caffeine + 50-80g sugar per can. Creates artificial dopamine spike → crash → dependency cycle. Linked to increased anxiety, heart palpitations, and sleep disruption.",
+ adhd:"The crash makes ADHD symptoms SIGNIFICANTLY worse than baseline. Creates a debt cycle: borrow energy now, pay back double later. Disrupts sleep which is already fragile in ADHD.",
+ dose:"AVOID. Replace with: green tea (L-theanine + gentle caffeine), or dates + water.",
+ nutrients:["⚠️ Excessive Caffeine","⚠️ Refined Sugar","⚠️ Taurine","⚠️ Artificial Colors"]},
+{id:"sugar",n:"Refined Sugar",i:"🍬",cat:"avoid",h:0,
+ hadith:"The Prophet ﷺ warned against excess (israf). — Multiple narrations",
+ quran:"Eat and drink but do not be excessive — He does not love the excessive. — Al-Araf 7:31",
+ sci:"Glucose spike → insulin surge → blood sugar crash → brain fog → impaired executive function → craving for more sugar. Feeds pathogenic gut bacteria. Increases systemic inflammation.",
+ adhd:"ADHD brains already have dopamine regulation problems. Sugar creates a fake dopamine hit that worsens the underlying dysfunction. Studies link high sugar intake to worse hyperactivity.",
+ dose:"MINIMIZE. Replace with: dates, raw honey, dark chocolate 85%+, fruits.",
+ nutrients:["⚠️ Empty Calories","⚠️ Inflammation","⚠️ Gut Dysbiosis","⚠️ Dopamine Disruption"]},
+{id:"processed",n:"Ultra-Processed Food",i:"🍟",cat:"avoid",h:0,
+ hadith:"The Prophet ﷺ said: 'The son of Adam fills no vessel worse than his stomach.' — Tirmidhi 2380",
+ quran:"Eat from the good things We have provided for you. — Al-Baqarah 2:57",
+ sci:"The Lancet (2007): artificial food colorings significantly worsen ADHD symptoms. Preservatives (BHT, BHA), emulsifiers, and artificial flavors disrupt gut-brain axis signaling.",
+ adhd:"Food additives are one of the FEW proven environmental factors that worsen ADHD. This isn't speculation — it's published in the highest-tier medical journals.",
+ dose:"Read labels. Fewer ingredients = better. If it has a TV commercial, be suspicious. Cook simple meals.",
+ nutrients:["⚠️ Artificial Colors","⚠️ Preservatives","⚠️ Trans Fats","⚠️ Excess Sodium"]},
+{id:"skip",n:"Skipping Breakfast",i:"🚫",cat:"avoid",h:0,
+ hadith:"The Prophet ﷺ never skipped the suhoor (early meal). He said: 'Take suhoor, for in it there is barakah.' — Bukhari 1923",
+ quran:"",
+ sci:"After 8-12 hours fasting, brain glycogen is depleted. Skipping breakfast → impaired working memory, worse sustained attention, increased impulsivity. Cortisol rises = anxiety.",
+ adhd:"Executive function requires glucose. Your prefrontal cortex literally cannot do its job on empty. ADHD mornings are hard enough — don't make them impossible.",
+ dose:"EAT SOMETHING within 1 hour of waking. Minimum: 3 dates + 2 eggs + water. Prep the night before if mornings are chaos.",
+ nutrients:["⚠️ No Fuel","⚠️ Cortisol Spike","⚠️ Blood Sugar Crash","⚠️ Impaired Memory"]},
+];
+
+const MED_CATS=[
+  {id:"all",l:"All",i:"📋"},{id:"sunnah",l:"Sunnah Foods",i:"🕌"},{id:"brain",l:"Brain Foods",i:"🧠"},
+  {id:"quran_fruit",l:"Quran Fruits",i:"🍇"},{id:"avoid",l:"Avoid",i:"🚫"}
+];
+
+// ════ QUESTS ════
+const QS=[
+  {id:"fajr",t:"Fajr Warrior",d:"Pray Fajr today",i:"🌅",xp:30,df:"medium",cat:"salah"},
+  {id:"dhuhr",t:"Noon Anchor",d:"Pray Dhuhr on time",i:"☀️",xp:20,df:"easy",cat:"salah"},
+  {id:"task1",t:"One-Thing Hero",d:"Complete your #1 task",i:"☝️",xp:35,df:"medium",cat:"task"},
+  {id:"task3",t:"Triple Threat",d:"Finish 3 tasks",i:"⚡",xp:50,df:"hard",cat:"task"},
+  {id:"dump",t:"Brain Dump",d:"Empty your head — write 5+ thoughts",i:"💭",xp:15,df:"easy",cat:"task"},
+  {id:"f25",t:"Deep Diver",d:"25-minute focus block",i:"🎯",xp:30,df:"medium",cat:"focus"},
+  {id:"f45",t:"Ultra Focus",d:"45-minute focus block",i:"🔥",xp:60,df:"hard",cat:"focus"},
+  {id:"protein",t:"Brain Fuel",d:"Eat protein before noon",i:"🥚",xp:20,df:"easy",cat:"food"},
+  {id:"sunnah_f",t:"Sunnah Snack",d:"Eat a Prophetic food",i:"🫒",xp:15,df:"easy",cat:"food"},
+  {id:"water",t:"Water Bearer",d:"6+ glasses today",i:"💧",xp:20,df:"easy",cat:"food"},
+  {id:"nosugar",t:"Sugar Slayer",d:"No refined sugar all day",i:"🍬",xp:45,df:"hard",cat:"food"},
+  {id:"dhikr",t:"Dhikr Drop",d:"SubhanAllah 33x + Alhamdulillah 33x",i:"📿",xp:15,df:"easy",cat:"well"},
+  {id:"shukr",t:"Gratitude",d:"Write 3 things you're thankful for",i:"✨",xp:20,df:"easy",cat:"well"},
+  {id:"quran_r",t:"Quran Moment",d:"Read or listen to 2 ayahs",i:"📖",xp:20,df:"easy",cat:"well"},
+  {id:"walk",t:"Fresh Air",d:"10 minutes outside",i:"🚶",xp:20,df:"easy",cat:"well"},
+  {id:"sleep",t:"Isha & Sleep",d:"Pray Isha, screens off after",i:"😴",xp:35,df:"hard",cat:"well"},
+];
+
+const PL={sprout:{s:["🌱","🌿","🪴","🌳"],n:"Oak"},flower:{s:["🌱","🌿","🌷","🌸"],n:"Cherry"},
+  palm:{s:["🌱","🌿","🌴","🌴"],n:"Palm"},rose:{s:["🌱","🌿","🥀","🌹"],n:"Rose"},
+  sun:{s:["🌱","🌿","🌻","🌻"],n:"Sunflower"},herb:{s:["🌱","🌿","🍃","🍀"],n:"Clover"}};
+
+const JN=[
+  {n:"The Desert",l:"🏜️",xp:0},{n:"The Oasis",l:"🏝️",xp:200},{n:"The Garden",l:"🌿",xp:500},
+  {n:"The Village",l:"🏘️",xp:1000},{n:"The Masjid",l:"🕌",xp:2000},{n:"The Mountain",l:"🏔️",xp:3500},{n:"The Holy City",l:"🕋",xp:5500}
+];
+
+const DHIKR=[
+  {ar:"سُبْحَانَ اللَّهِ",en:"SubhanAllah",tr:"Glory to Allah",n:33,co:C.m},
+  {ar:"الْحَمْدُ لِلَّهِ",en:"Alhamdulillah",tr:"Praise to Allah",n:33,co:C.go},
+  {ar:"اللَّهُ أَكْبَرُ",en:"Allahu Akbar",tr:"Allah is Greatest",n:33,co:C.t},
+  {ar:"لَا إِلٰهَ إِلَّا اللَّهُ",en:"La ilaha illAllah",tr:"None worthy except Allah",n:10,co:C.p},
+];
+
+// ════ STATE ════
+const S={
+  phase:'onboard',obStep:0,mode:null,name:'',struggle:null,
+  screen:'home',xp:847,
+  salah:{Fajr:0,Dhuhr:0,Asr:0,Maghrib:0,Isha:0},
+  qDone:{},bDone:false,bVis:false,
+  dhikr:[0,0,0,0],
+  garden:[{t:'sprout',g:3},{t:'flower',g:2},{t:'palm',g:3},{t:'rose',g:1},{t:'sun',g:2},{t:'herb',g:0},{t:null,g:0},{t:null,g:0},{t:null,g:0}],
+  col:[36,1,2,3,11,19],
+  // Library filters
+  ayCat:'all',aySearch:'',
+  medCat:'all',medOpen:null,
+  wk:Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return{day:d.toLocaleDateString('en',{weekday:'short'}),sl:Math.floor(Math.random()*3)+2,qst:Math.floor(Math.random()*3)+1,fd:Math.floor(Math.random()*3)+2,xp:Math.floor(Math.random()*80)+40};})
+};
+
+// ════ HELPERS ════
+const seed=(()=>{const d=new Date(),s=`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return Math.abs(h);})();
+
+function cP(lat=50.63,lng=5.57){const d=new Date(),n=Math.floor(d/86400000)+2440587.5-2451545,ec=-23.44*Math.cos((360/365*(d.getDate()+10))*Math.PI/180),dR=ec*Math.PI/180,lR=lat*Math.PI/180,eq=-7.655*Math.sin((357.528+.9856003*n)*Math.PI/180)+9.873*Math.sin(2*((280.46+.9856474*n)+1.914*Math.sin((357.528+.9856003*n)*Math.PI/180))*Math.PI/180),noon=12-lng/15-eq/60,ha=a=>Math.acos((Math.sin(a*Math.PI/180)-Math.sin(lR)*Math.sin(dR))/(Math.cos(lR)*Math.cos(dR)))*180/Math.PI/15,f=h=>{const hr=Math.floor(h),mn=Math.round((h-hr)*60);return`${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}`;};return{Fajr:f(noon-ha(-18)),Sunrise:f(noon-ha(-.833)),Dhuhr:f(noon+.02),Asr:f(noon+ha(45)*.67),Maghrib:f(noon+ha(-.833)),Isha:f(noon+ha(-17))};}
+const PT=cP();
+const tM=t=>{const[h,m]=t.split(':').map(Number);return h*60+m;};
+const nM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes();};
+const fC=m=>{if(m<0)m+=1440;const h=Math.floor(m/60);return h>0?`${h}h ${m%60}m`:`${m%60}m`;};
+function nP(){const n=nM(),o=["Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"];for(const p of o){const m=tM(PT[p]);if(m>n)return{name:p,time:PT[p],mins:m-n};}return{name:"Fajr",time:PT.Fajr,mins:tM(PT.Fajr)+1440-n};}
+function gQ(){const e=QS.filter(q=>q.df==='easy'),m=QS.filter(q=>q.df==='medium'),h=QS.filter(q=>q.df==='hard');return[e[seed%e.length],m[(seed*7)%m.length],h[(seed*13)%h.length],e[(seed*3+1)%e.length]];}
+function gS(xp){let s=JN[0];for(const j of JN)if(xp>=j.xp)s=j;return s;}
+function gN(xp){const s=gS(xp);const i=JN.indexOf(s);return i<JN.length-1?JN[i+1]:null;}
+
+function ring(v,sz=44,sk=3,co=C.m){const r=(sz-sk)/2,ci=2*Math.PI*r,off=ci-Math.min(v/100,1)*ci;return`<svg width="${sz}" height="${sz}" style="transform:rotate(-90deg)"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="rgba(255,255,255,.03)" stroke-width="${sk}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${co}" stroke-width="${sk}" stroke-dasharray="${ci}" stroke-dashoffset="${off}" stroke-linecap="round" style="transition:stroke-dashoffset .8s var(--spr);filter:drop-shadow(0 0 4px ${co}30)"/></svg>`;}
+
+// ════ RENDER ENGINE ════
+function R(){
+  const a=document.getElementById('app');
+  if(S.phase==='onboard'){rOB(a);return;}
+  const k=S.mode==='kid';
+  let c='';
+  if(S.screen==='home')c=rHome(k);
+  else if(S.screen==='quran')c=rQuran(k);
+  else if(S.screen==='medicine')c=rMed(k);
+  else if(S.screen==='garden')c=rGarden(k);
+  else if(S.screen==='me')c=rMe(k);
+  
+  a.innerHTML=`<div class="sc" id="sc">${c}</div>
+  <div class="nv">${[
+    {id:'home',i:'🏠',l:'Home'},{id:'quran',i:'📖',l:'Quran'},{id:'medicine',i:'🌿',l:'Medicine'},
+    {id:'garden',i:'🌸',l:'Garden'},{id:'me',i:'📊',l:'Me'}
+  ].map(n=>`<button class="nb ${S.screen===n.id?'a':''}" onclick="nav('${n.id}')"><div class="ni">${n.i}</div><span class="nl">${n.l}</span></button>`).join('')}</div>`;
+  if(!S.bVis)setTimeout(()=>{S.bVis=true;R();},4000);
+}
+
+// ════ ONBOARDING ════
+function rOB(a){
+  const k=S.mode==='kid';
+  let h='<div class="sc" style="display:flex;align-items:center;padding:24px"><div style="width:100%">';
+  if(S.obStep===0){
+    h+=`<div class="afi" style="text-align:center">
+      <p class="ar" style="font-size:22px;color:rgba(245,200,66,.35);margin-bottom:20px;line-height:1.6">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</p>
+      <h1 style="font-size:36px;margin-bottom:8px">FocusBridge<span style="opacity:.4"> 🌿</span></h1>
+      <p style="font-size:16px;color:var(--md);margin-bottom:6px">Islamic ADHD Companion</p>
+      <p style="font-size:13px;color:var(--dm);margin-bottom:32px;line-height:1.7">Your ADHD and your deen<br>are <em>not</em> in conflict.</p>
+      <div style="display:flex;gap:14px;margin-bottom:24px">
+        <button onclick="sM('kid')" style="flex:1;padding:30px 14px;border-radius:24px;background:var(--s1);border:2px solid rgba(245,200,66,.15);cursor:pointer">
+          <div style="font-size:50px;margin-bottom:10px">🧒</div>
+          <div style="font-size:18px;font-weight:900;color:var(--go)">Kids</div>
+          <div style="font-size:12px;color:var(--dm);margin-top:4px">Ages 7–14</div>
+        </button>
+        <button onclick="sM('adult')" style="flex:1;padding:30px 14px;border-radius:24px;background:var(--s1);border:2px solid rgba(74,222,128,.15);cursor:pointer">
+          <div style="font-size:50px;margin-bottom:10px">🧑</div>
+          <div style="font-size:18px;font-weight:900;color:var(--m)">Adults</div>
+          <div style="font-size:12px;color:var(--dm);margin-top:4px">Ages 15+</div>
+        </button>
+      </div>
+      <p style="font-size:10px;color:var(--dm);line-height:1.6">📖 Full Quran verse library · 🌿 Prophetic medicine guide<br>⚔️ Daily quests · 🌸 Growing garden · 📊 Weekly insights</p>
+    </div>`;
+  } else if(S.obStep===1){
+    h+=`<div class="afi">
+      <div style="display:flex;gap:4px;margin-bottom:20px">${[1,2,3].map(i=>`<div style="flex:1;height:4px;border-radius:2px;background:${i<=1?'var(--m)':'rgba(255,255,255,.04)'}"></div>`).join('')}</div>
+      <h2 style="font-size:24px;padding:0 0 6px">${k?"What's hardest? 🤔":"What's your biggest struggle?"}</h2>
+      <p style="font-size:13px;color:var(--md);margin-bottom:20px">${k?"Pick one!":"This personalizes your experience."}</p>
+      ${[{id:'salah',i:'🤲',t:k?"Remembering prayers":"Keeping up with Salah",d:k?"I forget when":"Time blindness + prayer guilt"},
+        {id:'focus',i:'🎯',t:k?"Staying focused":"Focus & tasks",d:k?"Brain goes everywhere":"Executive function"},
+        {id:'food',i:'🧠',t:k?"Eating well":"Nutrition & energy",d:k?"I skip meals":"Brain fog + crashes"},
+        {id:'morning',i:'🌅',t:k?"Mornings":"Starting the day",d:k?"Can't wake up":"Fajr + breakfast"}
+      ].map(o=>`<button onclick="sS('${o.id}')" style="width:100%;display:flex;align-items:center;gap:16px;padding:18px;margin-bottom:8px;border-radius:20px;background:var(--s1);border:1px solid var(--b);cursor:pointer;text-align:left;color:var(--tx);font-family:inherit;transition:all .15s;font-size:14px">
+        <div style="font-size:30px;width:52px;height:52px;border-radius:16px;background:rgba(74,222,128,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0">${o.i}</div>
+        <div><div style="font-weight:800;font-size:15px">${o.t}</div><div style="font-size:12px;color:var(--dm);margin-top:2px">${o.d}</div></div>
+      </button>`).join('')}
+    </div>`;
+  } else if(S.obStep===2){
+    h+=`<div class="afi">
+      <div style="display:flex;gap:4px;margin-bottom:20px">${[1,2,3].map(i=>`<div style="flex:1;height:4px;border-radius:2px;background:${i<=2?'var(--m)':'rgba(255,255,255,.04)'}"></div>`).join('')}</div>
+      <h2 style="font-size:24px;padding:0 0 6px">${k?"Your name? 😊":"What should we call you?"}</h2>
+      <p style="font-size:13px;color:var(--md);margin-bottom:20px">Optional — skip if you prefer.</p>
+      <input class="srch" id="ni" style="padding-left:16px;font-size:18px;margin-bottom:16px" placeholder="Your name..." value="${S.name}" onkeyup="if(event.key==='Enter')oN()">
+      <button class="btn btn1" onclick="oN()">Continue →</button>
+    </div>`;
+  } else if(S.obStep===3){
+    const lb={salah:'Salah',focus:'Focus',food:'Nutrition',morning:'Mornings'};
+    h+=`<div style="text-align:center" class="afi">
+      <div style="display:flex;gap:4px;margin-bottom:20px">${[1,2,3].map(()=>`<div style="flex:1;height:4px;border-radius:2px;background:var(--m)"></div>`).join('')}</div>
+      <div style="font-size:64px;margin-bottom:16px">🌿</div>
+      <h1 style="margin-bottom:8px">Bismillah${S.name?', '+S.name:''} ✨</h1>
+      <p style="font-size:14px;color:var(--md);margin-bottom:4px">Your companion is ready.</p>
+      <p style="font-size:12px;color:var(--dm)">Personalized for <strong style="color:var(--go)">${lb[S.struggle]||''}</strong></p>
+      <p class="ar" style="font-size:20px;color:rgba(245,200,66,.45);margin:24px 0 8px;line-height:1.8">فَإِنَّ مَعَ الْعُسْرِ يُسْرًا</p>
+      <p style="font-size:11px;color:var(--dm);font-style:italic;margin-bottom:32px">"With hardship comes ease" — Ash-Sharh 94:5</p>
+      <button class="btn btn2" onclick="go()" style="font-size:17px">Start My Journey 🌿</button>
+    </div>`;
+  }
+  h+='</div></div>';a.innerHTML=h;
+}
+
+// ════ HOME ════
+function rHome(k){
+  const np=nP(),st=gS(S.xp),ns=gN(S.xp),qs=gQ();
+  const qd=Object.keys(S.qDone).length+(S.bDone?1:0),qt=qs.length+(S.bVis?1:0);
+  const sd=Object.values(S.salah).filter(v=>v>0).length;
+  const uc=np.mins<=30?C.r:np.mins<=60?C.go:C.t;
+  const gr=S.name?(k?`Hey ${S.name}! 🏆`:`Assalamu Alaikum, ${S.name}`):(k?"Hey there! 🏆":"Assalamu Alaikum");
+
+  // Featured verse
+  const fv=AYAHS.filter(a=>S.col.includes(a.id))[Math.floor(Date.now()/86400000)%S.col.length]||AYAHS[2];
+
+  let h=`<div class="pg">
+    <div style="padding:16px 0 12px">
+      <p class="ar" style="font-size:15px;color:rgba(245,200,66,.25);text-align:center;margin-bottom:6px">بِسْمِ ٱللَّهِ</p>
+      <h1 style="font-size:${k?24:26}px">${gr}</h1>
+      <p class="sub">${new Date().toLocaleDateString('en',{weekday:'long',month:'long',day:'numeric'})} · ${st.l} ${st.n} · ${S.xp} XP</p>
+    </div>`;
+
+  // PRAYER WIDGET
+  h+=`<div class="c" style="margin-bottom:10px;border-color:${C.t}12">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🕌</span>
+        <div><p class="cap" style="color:${C.t}">${np.name==='Sunrise'?'SUNRISE':'NEXT PRAYER'}</p><div style="font-size:20px;font-weight:900">${np.name} · ${np.time}</div></div></div>
+      <div style="text-align:right"><div style="font-size:22px;font-weight:900;color:${uc};${np.mins<=15?'animation:cp 1.5s ease infinite':''}">${fC(np.mins)}</div></div>
+    </div>
+    <div style="display:flex;gap:4px">${['Fajr','Dhuhr','Asr','Maghrib','Isha'].map(p=>{const t=PT[p],ps=nM()>=tM(t),nx=p===np.name,pr=S.salah[p]>0;
+      return`<button onclick="cS('${p}')" style="flex:1;text-align:center;padding:8px 2px;border-radius:12px;background:${pr?C.m+'12':nx?C.t+'08':'rgba(255,255,255,.015)'};border:1.5px solid ${pr?C.m+'20':nx?C.t+'15':'transparent'};cursor:pointer;transition:all .2s;font-family:inherit">
+        <div style="font-size:9px;font-weight:800;color:${pr?C.m:nx?C.t:ps?'var(--dm)':'var(--md)'}">${p}</div>
+        <div style="font-size:11px;font-weight:700;color:${pr?C.m:'var(--tx)'}">${t}</div>
+        ${pr?`<div style="font-size:8px;color:${C.m}">✓</div>`:''}</button>`;}).join('')}</div>
+    <p style="font-size:8px;color:var(--dm);text-align:center;margin-top:6px">Tap prayer to mark ✓ prayed · ½ late · ○ reset</p>
+  </div>`;
+
+  // VERSE OF THE DAY
+  h+=`<div class="c" style="margin-bottom:10px;border-color:${RC[fv.r]}10">
+    <p class="cap" style="margin-bottom:6px">📖 VERSE OF THE DAY</p>
+    <p class="ar" style="font-size:${k?17:16}px;color:${RC[fv.r]}bb;line-height:2;margin-bottom:6px">${fv.ar}</p>
+    <p style="font-size:12px;color:var(--md);font-style:italic;line-height:1.5">"${fv.en}"</p>
+    <p style="font-size:10px;color:${RC[fv.r]};font-weight:700;margin-top:4px">— ${fv.s} ${fv.v} <span class="tg" style="background:${RC[fv.r]}15;color:${RC[fv.r]};margin-left:4px">${fv.r}</span></p>
+  </div>`;
+
+  // DHIKR
+  h+=`<div class="c" style="margin-bottom:10px">
+    <p class="cap" style="margin-bottom:8px">📿 DAILY DHIKR</p>
+    <div style="display:flex;gap:6px">${DHIKR.map((d,i)=>{const done=S.dhikr[i]>=d.n;return`<button onclick="dk(${i})" style="flex:1;padding:10px 4px;border-radius:16px;background:${done?d.co+'15':d.co+'05'};border:2px solid ${done?d.co:d.co+'12'};cursor:pointer;transition:all .15s var(--spr);font-family:inherit">
+      <div style="font-size:18px;font-weight:900;color:${d.co}">${S.dhikr[i]}</div>
+      <div style="font-size:8px;font-weight:700;color:var(--dm);margin-top:2px">${d.en.split(' ').pop()}</div>
+      <div style="font-size:7px;color:${done?d.co:'var(--dm)'}">${done?'✓ Done':'/ '+d.n}</div>
+    </button>`;}).join('')}</div>
+  </div>`;
+
+  // QUESTS
+  h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px"><h3>${k?"Quests! ⚔️":"Today's Quests"}</h3>
+    <div style="display:flex;align-items:center;gap:6px"><div style="position:relative;width:32px;height:32px">${ring(qt>0?(qd/qt)*100:0,32,2.5,qd===qt&&qt>0?C.go:C.m)}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:${qd===qt&&qt>0?C.go:C.m}">${qd}/${qt}</div></div></div></div>`;
+  
+  qs.forEach((q,i)=>{const d=S.qDone[q.id],dc=q.df==='hard'?C.r:q.df==='medium'?C.go:C.m;
+    h+=`<div class="c afi" style="margin-bottom:8px;${d?'opacity:.35;':''}border-left:3px solid ${d?'transparent':dc+'30'};border-radius:4px 22px 22px 4px;animation-delay:${i*50}ms" ${d?'':`onclick="dQ('${q.id}')"`}>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:48px;height:48px;border-radius:16px;flex-shrink:0;background:${d?C.m+'10':dc+'06'};display:flex;align-items:center;justify-content:center;font-size:24px;border:1.5px solid ${d?C.m+'15':dc+'12'}">${d?`<span style="color:${C.m}">✓</span>`:q.i}</div>
+        <div style="flex:1"><div style="display:flex;align-items:center;gap:5px;margin-bottom:2px"><span style="font-size:14px;font-weight:800;${d?'text-decoration:line-through;color:var(--dm)':''}">${q.t}</span><span class="tg" style="background:${dc}10;color:${dc}">${q.df.toUpperCase()}</span></div><p style="font-size:11px;color:var(--dm)">${q.d}</p></div>
+        <div style="text-align:right"><span style="font-size:13px;font-weight:900;color:${d?'var(--dm)':C.go}">+${q.xp}</span><div style="font-size:8px;color:var(--dm)">XP</div></div>
+      </div></div>`;});
+
+  // Journey mini
+  h+=`<div class="c" style="margin-top:4px;border-color:${C.go}10">
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px">${st.l}</span>
+      <div style="flex:1"><div style="font-size:12px;font-weight:800;color:${C.go}">${st.n}</div>${ns?`<div style="font-size:10px;color:var(--dm)">${ns.xp-S.xp} XP to ${ns.n}</div>`:''}</div>
+      <div style="font-size:20px;font-weight:900;color:${C.go}">${S.xp}</div></div>
+    ${ns?`<div style="margin-top:8px;height:5px;border-radius:3px;background:rgba(255,255,255,.03);overflow:hidden"><div style="height:100%;border-radius:3px;background:linear-gradient(90deg,${C.go},${C.m});width:${Math.min(((S.xp-st.xp)/(ns.xp-st.xp))*100,100)}%"></div></div>`:''}
+  </div></div>`;
+  return h;
+}
+
+// ════ QURAN LIBRARY ════
+function rQuran(k){
+  const filtered=S.ayCat==='all'?AYAHS:AYAHS.filter(a=>a.cat===S.ayCat);
+  const searched=S.aySearch?filtered.filter(a=>a.en.toLowerCase().includes(S.aySearch.toLowerCase())||a.s.toLowerCase().includes(S.aySearch.toLowerCase())||a.ar.includes(S.aySearch)):filtered;
+
+  let h=`<div class="pg">
+    <h2 style="font-size:${k?22:24}px">📖 Quran Library</h2>
+    <p class="sub" style="margin-bottom:14px">${AYAHS.length} key verses, organized by theme. Tap to collect.</p>
+    
+    <div style="position:relative;margin-bottom:12px"><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.4">🔍</span>
+      <input class="srch" id="ayS" placeholder="Search verses..." value="${S.aySearch}" oninput="S.aySearch=this.value;R()"></div>
+    
+    <div class="tabs">${AY_CATS.map(c=>`<button class="tab ${S.ayCat===c.id?'a':''}" onclick="S.ayCat='${c.id}';R()">${c.i} ${c.l}</button>`).join('')}</div>
+    
+    <p style="font-size:10px;color:var(--dm);margin-bottom:10px">${searched.length} verse${searched.length!==1?'s':''} · ${S.col.length} collected</p>`;
+
+  searched.forEach((a,i)=>{const own=S.col.includes(a.id),rc=RC[a.r];
+    h+=`<div class="c afi" style="margin-bottom:8px;animation-delay:${Math.min(i*30,300)}ms;${own?`border-color:${rc}12`:''}" ${own?'':`onclick="colA(${a.id})"`}>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span class="tg" style="background:${rc}15;color:${rc}">${a.r.toUpperCase()}</span>
+        <span style="font-size:10px;color:var(--dm);font-weight:700">${a.s} ${a.v}</span>
+        <span style="font-size:10px;color:var(--dm)">${a.cat}</span>
+        ${own?`<span style="margin-left:auto;font-size:10px;color:${C.m}">✓ Collected</span>`:`<span style="margin-left:auto;font-size:10px;color:var(--dm)">Tap to collect</span>`}
+      </div>
+      <p class="ar" style="font-size:${k?17:15}px;color:${own?rc+'bb':'var(--tx)'};line-height:2;margin-bottom:6px">${a.ar}</p>
+      <p style="font-size:${k?12:11}px;color:var(--md);font-style:italic;line-height:1.5">"${a.en}"</p>
+    </div>`;});
+  
+  if(searched.length===0)h+=`<div style="text-align:center;padding:40px 0;color:var(--dm)"><div style="font-size:32px;margin-bottom:8px">🔍</div><p>No verses found. Try another search or category.</p></div>`;
+  h+='</div>';return h;
+}
+
+// ════ PROPHETIC MEDICINE ════
+function rMed(k){
+  const filtered=S.medCat==='all'?MED:MED.filter(m=>m.cat===S.medCat);
+
+  let h=`<div class="pg">
+    <h2 style="font-size:${k?22:24}px">🌿 Prophetic Medicine</h2>
+    <p class="sub" style="margin-bottom:14px">${MED.length} foods & remedies — hadith sources, Quran references, ADHD science.</p>
+    
+    <div class="tabs">${MED_CATS.map(c=>`<button class="tab ${S.medCat===c.id?'a':''}" onclick="S.medCat='${c.id}';S.medOpen=null;R()">${c.i} ${c.l}</button>`).join('')}</div>`;
+
+  filtered.forEach((m,i)=>{const open=S.medOpen===m.id;const dc=m.h?C.m:C.r;
+    h+=`<div class="c afi" style="margin-bottom:8px;animation-delay:${Math.min(i*30,300)}ms;border-color:${open?dc+'15':'var(--b)'}">
+      <div onclick="S.medOpen=S.medOpen==='${m.id}'?null:'${m.id}';R()" style="display:flex;align-items:center;gap:14px;cursor:pointer">
+        <div style="font-size:32px;width:52px;height:52px;border-radius:16px;background:${dc}08;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid ${dc}12">${m.i}</div>
+        <div style="flex:1"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:${k?16:15}px;font-weight:800">${m.n}</span><span class="tg" style="background:${dc}12;color:${dc}">${m.h?'HERO':'AVOID'}</span></div>
+          <p style="font-size:11px;color:var(--dm);margin-top:2px">${m.adhd.substring(0,80)}${m.adhd.length>80?'...':''}</p></div>
+        <span style="font-size:14px;color:var(--dm);transition:transform .2s;transform:rotate(${open?180:0}deg)">▼</span>
+      </div>
+      ${open?`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--b)">
+        ${m.hadith?`<div style="padding:12px;border-radius:14px;background:${C.go}04;border:1px solid ${C.go}06;margin-bottom:10px">
+          <p class="cap" style="color:${C.go};margin-bottom:4px">📜 HADITH</p>
+          <p style="font-size:${k?12:11}px;color:var(--md);line-height:1.6">${m.hadith}</p></div>`:''}
+        ${m.quran?`<div style="padding:12px;border-radius:14px;background:${C.p}04;border:1px solid ${C.p}06;margin-bottom:10px">
+          <p class="cap" style="color:${C.p};margin-bottom:4px">📖 QURAN</p>
+          <p style="font-size:${k?12:11}px;color:var(--md);line-height:1.6;font-style:italic">${m.quran}</p></div>`:''}
+        <div style="padding:12px;border-radius:14px;background:${C.t}04;border:1px solid ${C.t}06;margin-bottom:10px">
+          <p class="cap" style="color:${C.t};margin-bottom:4px">🔬 SCIENCE</p>
+          <p style="font-size:${k?12:11}px;color:var(--md);line-height:1.6">${m.sci}</p></div>
+        <div style="padding:12px;border-radius:14px;background:${C.m}04;border:1px solid ${C.m}06;margin-bottom:10px">
+          <p class="cap" style="color:${C.m};margin-bottom:4px">🧠 ADHD IMPACT</p>
+          <p style="font-size:${k?12:11}px;color:var(--md);line-height:1.6">${m.adhd}</p></div>
+        <div style="padding:12px;border-radius:14px;background:${C.go}04;border:1px solid ${C.go}06;margin-bottom:10px">
+          <p class="cap" style="color:${C.go};margin-bottom:4px">💊 DOSE & HOW TO USE</p>
+          <p style="font-size:${k?12:11}px;color:var(--md);line-height:1.6">${m.dose}</p></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${m.nutrients.map(n=>`<span class="tg" style="background:${n.startsWith('⚠')?C.r+'10':C.m+'10'};color:${n.startsWith('⚠')?C.r:C.m}">${n}</span>`).join('')}</div>
+      </div>`:''}
+    </div>`;});
+  h+='</div>';return h;
+}
+
+// ════ GARDEN ════
+function rGarden(k){
+  const gp=S.garden.filter(s=>s.t).length,fg=S.garden.filter(s=>s.g>=3).length;
+  let h=`<div class="pg">
+    <h2>${k?"My Garden! 🌸":"Your Garden"}</h2>
+    <p class="sub" style="margin-bottom:12px">${k?"Quests grow plants! They NEVER die!":"Complete quests to grow plants. Your garden never dies."}</p>
+    
+    <div style="border-radius:24px;overflow:hidden;margin-bottom:14px;background:linear-gradient(180deg,#0A1820,#0E241E 40%,#132E1A);border:1px solid var(--b);padding:${k?'28px 14px 20px':'24px 12px 18px'};position:relative">
+      <div style="position:absolute;top:10px;right:18px;font-size:18px;opacity:.25">🌙</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">${S.garden.map((sl,i)=>{const it=sl.t?PL[sl.t]:null,em=it?it.s[Math.min(sl.g,3)]:null;
+        return`<div class="gc ${em?'':'e'}" style="animation:fi .3s ease ${i*40}ms both">
+          ${em?`<span style="font-size:${k?40:34}px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));${sl.g>=3?'animation:sw 3s ease infinite':''}">${em}</span><span style="font-size:8px;color:var(--dm);font-weight:700;margin-top:3px">${it.n}</span>
+          ${sl.g<3?`<div style="display:flex;gap:2px;margin-top:3px">${[0,1,2,3].map(g=>`<div style="width:6px;height:3px;border-radius:2px;background:${g<=sl.g?C.m+'60':'rgba(255,255,255,.06)'}"></div>`).join('')}</div>`:''}`
+          :'<span style="font-size:22px;opacity:.08">+</span>'}
+        </div>`;}).join('')}</div></div>
+    
+    <div style="display:flex;gap:8px;margin-bottom:14px">${[{n:gp,l:'Plants',c:C.m},{n:fg,l:'Grown',c:C.go},{n:9-gp,l:'Empty',c:C.dm}].map(s=>
+      `<div class="c" style="flex:1;text-align:center;padding:12px"><div style="font-size:24px;font-weight:900;color:${s.c}">${s.n}</div><div style="font-size:9px;color:var(--dm);font-weight:700">${s.l}</div></div>`).join('')}</div>
+    
+    <h3 style="margin-bottom:8px">📿 Ayah Collection <span style="font-weight:600;color:var(--dm)">${S.col.length}/${AYAHS.length}</span></h3>
+    <div style="display:flex;align-items:center;gap:10px;padding:14px;background:var(--s1);border-radius:18px;border:1px solid var(--b);margin-bottom:10px">
+      <div style="position:relative;width:48px;height:48px">${ring((S.col.length/AYAHS.length)*100,48,3.5,C.p)}<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:${C.p}">${S.col.length}</div></div>
+      <div><p style="font-size:12px;font-weight:700">${S.col.length} verses collected</p><p style="font-size:10px;color:var(--dm)">Collect verses from the Quran Library tab or earn through quest drops!</p></div></div>
+    
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${AYAHS.slice(0,15).map((a,i)=>{const own=S.col.includes(a.id),rc=RC[a.r];
+      return`<div class="c" style="padding:8px;${own?`background:${rc}04;border-color:${rc}10`:'opacity:.4'}">
+        ${own?`<span style="font-size:7px;font-weight:800;color:${rc};text-transform:uppercase">${a.r}</span><p class="ar" style="font-size:10px;color:${rc}a0;line-height:1.7;margin:2px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${a.ar}</p><p style="font-size:7px;color:${rc};font-weight:700">${a.s}</p>`:
+        `<div style="text-align:center;padding:6px 0"><div style="font-size:14px;opacity:.15">🔒</div><p style="font-size:7px;color:var(--dm);margin-top:2px">${a.s}</p></div>`}</div>`;}).join('')}</div>
+  </div>`;return h;
+}
+
+// ════ ME (INSIGHTS) ════
+function rMe(k){
+  const wl=S.wk,tS=wl.reduce((s,d)=>s+d.sl,0),tX=wl.reduce((s,d)=>s+d.xp,0),tF=wl.reduce((s,d)=>s+d.fd,0);
+  const mX=Math.max(...wl.map(d=>d.xp)),st=gS(S.xp),ns=gN(S.xp);
+  
+  let h=`<div class="pg">
+    <h2>${k?"My Stats! 📊":"Insights"}</h2>
+    <p class="sub" style="margin-bottom:14px">Your week at a glance.</p>
+    
+    <div class="c" style="margin-bottom:10px;text-align:center;background:linear-gradient(145deg,rgba(245,200,66,.06),rgba(74,222,128,.04));border-color:${C.go}12">
+      <p class="cap">WEEKLY XP</p>
+      <div style="font-size:42px;font-weight:900;color:${C.go};margin:4px 0">${tX}</div></div>
+    
+    <div class="c" style="margin-bottom:10px">
+      <p class="cap" style="margin-bottom:8px">📊 DAILY XP</p>
+      <div style="display:flex;gap:4px;align-items:flex-end;height:80px">${wl.map((d,i)=>{const pct=mX>0?(d.xp/mX)*100:0,isT=i===6;
+        return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:8px;font-weight:700;color:${isT?C.go:'var(--dm)'}">${d.xp}</span>
+          <div style="width:100%;border-radius:6px;background:${isT?`linear-gradient(180deg,${C.go},${C.m}60)`:C.m+'30'};height:${Math.max(pct,8)}%;transition:height .6s var(--spr) ${i*60}ms;min-height:4px"></div>
+          <span style="font-size:8px;font-weight:${isT?800:600};color:${isT?C.go:'var(--dm)'}">${d.day}</span></div>`;}).join('')}</div></div>
+    
+    <div class="c" style="margin-bottom:10px">
+      <p class="cap" style="margin-bottom:8px">🤲 PRAYERS THIS WEEK</p>
+      <div style="display:flex;gap:4px;align-items:flex-end;height:60px">${wl.map((d,i)=>{const pct=(d.sl/5)*100,isT=i===6;
+        return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:8px;font-weight:700;color:${d.sl>=5?C.go:'var(--dm)'}">${d.sl}/5</span>
+          <div style="width:100%;border-radius:6px;background:${d.sl>=5?C.go+'60':C.t+'35'};height:${Math.max(pct,8)}%;transition:height .6s var(--spr) ${i*60}ms;min-height:4px"></div>
+          <span style="font-size:8px;color:var(--dm)">${d.day}</span></div>`;}).join('')}</div>
+      <div style="margin-top:8px;padding:8px 12px;border-radius:12px;background:${C.t}05;border:1px solid ${C.t}06">
+        <p style="font-size:11px;color:${C.t};font-weight:700">💡 ${tS}/35 prayers this week. ${tS>=30?'ما شاء الله!':tS>=20?'Building momentum.':'Every prayer counts.'}</p></div></div>
+    
+    <div class="c" style="margin-bottom:10px">
+      <p class="cap" style="margin-bottom:6px">🧠 BRAIN FUEL</p>
+      <div style="display:flex;gap:4px">${wl.map((d,i)=>`<div style="flex:1;text-align:center"><div style="aspect-ratio:1;border-radius:10px;background:${d.fd>=4?C.m+'12':d.fd>=2?C.go+'10':C.r+'08'};border:1px solid ${d.fd>=4?C.m:d.fd>=2?C.go:C.r}10;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:${d.fd>=4?C.m:d.fd>=2?C.go:C.r}">${d.fd}/5</div><span style="font-size:7px;color:var(--dm)">${d.day}</span></div>`).join('')}</div></div>
+
+    <div class="c" style="border-color:${C.go}10">
+      <div style="display:flex;align-items:center;gap:12px"><span style="font-size:32px">${st.l}</span>
+        <div style="flex:1"><div style="font-size:14px;font-weight:800;color:${C.go}">${st.n}</div><div style="font-size:11px;color:var(--dm)">${S.xp} XP · ${ns?`${ns.xp-S.xp} to ${ns.n}`:'Complete!'}</div></div></div>
+      ${ns?`<div style="margin-top:8px;height:5px;border-radius:3px;background:rgba(255,255,255,.03);overflow:hidden"><div style="height:100%;border-radius:3px;background:linear-gradient(90deg,${C.go},${C.m});width:${Math.min(((S.xp-st.xp)/(ns.xp-st.xp))*100,100)}%"></div></div>`:''}
+    </div>
+    
+    <div style="margin-top:16px;text-align:center"><button onclick="S.phase='onboard';S.obStep=0;R()" style="padding:8px 18px;border-radius:14px;background:var(--s1);border:1px solid var(--b);color:var(--dm);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">⚙️ Restart Onboarding</button></div>
+  </div>`;return h;
+}
+
+// ════ LOOT ════
+function sL(type,data){
+  const o=document.createElement('div');o.className='lo';o.onclick=()=>o.remove();
+  let ps='';const cols=[C.go,'#fff',C.m,C.t,C.p];
+  for(let i=0;i<35;i++){ps+=`<div class="lp" style="left:${50+(Math.random()-.5)*80}%;top:${42+(Math.random()-.5)*60}%;width:${2+Math.random()*5}px;height:${2+Math.random()*5}px;background:${cols[i%5]};animation-delay:${Math.random()*400}ms"></div>`;}
+  let c='';
+  if(type==='ayah'){const rc=RC[data.r]||C.go;c=`<div style="font-size:14px;font-weight:800;color:${rc};letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">${data.r==='legendary'?'⭐ LEGENDARY':data.r==='epic'?'💎 EPIC':'✨ '+data.r.toUpperCase()} VERSE</div><div style="background:rgba(255,255,255,.03);border-radius:22px;padding:22px;border:1px solid ${rc}18"><p class="ar" style="font-size:20px;color:${rc}bb;line-height:2;margin-bottom:8px">${data.ar}</p><p style="font-size:12px;color:var(--md);font-style:italic">"${data.en}"</p><p style="font-size:11px;color:${rc};font-weight:800;margin-top:8px">— ${data.s} ${data.v}</p></div>`;}
+  else{c=`<div style="font-size:52px;margin-bottom:10px">${data.icon||'🌟'}</div><h3 style="font-size:22px;font-weight:900;color:${C.go};margin-bottom:6px">${data.title}</h3><p style="font-size:13px;color:var(--md)">${data.desc||''}</p><div style="margin-top:12px;padding:6px 18px;border-radius:14px;background:${C.m}12;display:inline-block"><span style="font-size:15px;font-weight:900;color:${C.m}">+${data.xp} XP</span></div>`;}
+  o.innerHTML=`${ps}<div style="text-align:center;z-index:2;padding:30px;max-width:340px;animation:pi .5s ease .1s both">${c}</div>`;
+  document.body.appendChild(o);setTimeout(()=>{if(document.body.contains(o))o.remove();},4500);
+}
+
+// ════ ACTIONS ════
+function nav(s){S.screen=s;R();setTimeout(()=>{const e=document.getElementById('sc');if(e)e.scrollTop=0;},30);}
+function sM(m){S.mode=m;S.obStep=1;R();}
+function sS(s){S.struggle=s;S.obStep=2;R();}
+function oN(){const i=document.getElementById('ni');if(i)S.name=i.value.trim();S.obStep=3;R();}
+function go(){S.phase='app';S.screen='home';R();}
+function dk(i){S.dhikr[i]++;if(S.dhikr[i]===DHIKR[i].n)S.xp+=5;R();}
+function cS(p){S.salah[p]=S.salah[p]===0?1:S.salah[p]===1?.5:0;if(S.salah[p]===1)S.xp+=10;R();}
+function colA(id){if(!S.col.includes(id)){S.col.push(id);S.xp+=5;R();const a=AYAHS.find(x=>x.id===id);if(a)setTimeout(()=>sL('ayah',a),300);}}
+
+function dQ(id){
+  if(S.qDone[id])return;const q=QS.find(x=>x.id===id);if(!q)return;
+  S.qDone[id]=true;S.xp+=q.xp;
+  const gw=S.garden.filter(s=>s.t&&s.g<3);
+  if(gw.length)gw[Math.floor(Math.random()*gw.length)].g++;
+  else{const em=S.garden.findIndex(s=>!s.t);if(em>=0){const ty=Object.keys(PL);S.garden[em]={t:ty[Math.floor(Math.random()*ty.length)],g:0};}}
+  if(Math.random()<.25){const unc=AYAHS.filter(a=>!S.col.includes(a.id));if(unc.length){
+    const wt=unc.map(a=>a.r==='legendary'?1:a.r==='epic'?3:a.r==='rare'?6:10),tw=wt.reduce((s,w)=>s+w,0);
+    let r=Math.random()*tw,pk=unc[0];for(let i=0;i<unc.length;i++){r-=wt[i];if(r<=0){pk=unc[i];break;}}
+    S.col.push(pk.id);R();setTimeout(()=>sL('ayah',pk),400);return;}}
+  R();setTimeout(()=>sL('xp',{icon:q.i,title:S.mode==='kid'?'Done! 🎉':'Quest Complete!',desc:q.t,xp:q.xp}),300);
+}
+
+// ════ INIT ════
+R();
+setInterval(()=>{if(S.phase==='app'&&S.screen==='home')R();},30000);
+</script>
+</body>
+</html>
